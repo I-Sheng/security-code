@@ -1,0 +1,17 @@
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && \
+    apt-get install -y bind9 bind9utils dnsutils vim tcpdump && \
+    rm -rf /var/lib/apt/lists/*
+
+# Make sure BIND listens on all interfaces and allows recursion.
+# You will still edit named.conf.options/named.conf.local in a volume or in the image.
+RUN sed -i 's/OPTIONS="-u bind"/OPTIONS="-u bind -4"/' /etc/default/named
+
+EXPOSE 53/udp
+EXPOSE 53/tcp
+
+CMD ["/usr/sbin/named", "-f", "-g"]
+

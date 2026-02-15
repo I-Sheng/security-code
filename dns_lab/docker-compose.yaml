@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  dns-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.dns
+    container_name: dns-server
+    hostname: dns-server
+    networks:
+      dns-net:
+        ipv4_address: 172.30.0.2
+    ports:
+      - "53:53/udp"
+      - "53:53/tcp"
+    command: ["/usr/sbin/named", "-f", "-g"]
+
+  dns-client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    container_name: dns-client
+    hostname: dns-client
+    networks:
+      dns-net:
+        ipv4_address: 172.30.0.3
+    # Point the client DNS to the dns-server container
+    dns:
+      - 172.30.0.2
+    stdin_open: true
+    tty: true
+    command: ["/bin/bash"]
+
+networks:
+  dns-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
+

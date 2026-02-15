@@ -1,0 +1,10 @@
+FROM kalilinux/kali-rolling
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && \
+    apt-get install -y dnsutils tcpdump iputils-ping vim && \
+    rm -rf /var/lib/apt/lists/*
+
+CMD ["/bin/bash"]
+
